@@ -1,10 +1,15 @@
 com.paiondata.aristotle
+com.paiondata.aristotle.aop
+com.paiondata.aristotle.common.annotion
 com.paiondata.aristotle.common.base
 com.paiondata.aristotle.common.exception
+com.paiondata.aristotle.common.util
 com.paiondata.aristotle.config
 com.paiondata.aristotle.controller
 com.paiondata.aristotle.exception
 com.paiondata.aristotle.exception.customize
+com.paiondata.aristotle.mapper
+com.paiondata.aristotle.mapper.impl
 com.paiondata.aristotle.model
 com.paiondata.aristotle.model.dto
 com.paiondata.aristotle.model.entity
