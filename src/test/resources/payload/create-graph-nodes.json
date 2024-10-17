@@ -1,0 +1,34 @@
+{
+  "graphCreateDTO": {
+    "userUidcid": "%s",
+    "title": "%s",
+    "description": "-"
+  },
+  "graphNodeDTO": [
+    {
+      "temporaryId": "1",
+      "properties": {
+        "color": "%s"
+      }
+    },
+    {
+      "temporaryId": "2",
+      "properties": {
+        "color": "%s"
+      }
+    },
+    {
+      "temporaryId": "3",
+      "properties": {
+        "color": "%s"
+      }
+    }
+  ],
+  "graphNodeRelationDTO": [
+    {
+      "fromId": "1",
+      "relationName": "-",
+      "toId": "2"
+    }
+  ]
+}

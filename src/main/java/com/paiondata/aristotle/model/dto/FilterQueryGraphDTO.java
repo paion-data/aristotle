@@ -16,7 +16,6 @@
 package com.paiondata.aristotle.model.dto;
 
 import com.paiondata.aristotle.common.base.Message;
-import com.paiondata.aristotle.model.BaseEntity;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -30,31 +29,25 @@ import java.util.Map;
 import javax.validation.constraints.NotBlank;
 
 /**
- * Data Transfer Object (DTO) for updating a node.
- *
- * This DTO is used to encapsulate the data required for a node in a graph.
+ * Data Transfer Object (DTO) for filtering graphs.
  */
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ApiModel(description = "Updates a node in a graph.")
-public class NodeUpdateDTO extends BaseEntity {
+@ApiModel(description = "Data Transfer Object (DTO) for binding nodes.")
+public class FilterQueryGraphDTO {
 
     /**
-     * The uuid of the node.
-     *
-     * @see Message#UUID_MUST_NOT_BE_BLANK
+     * The uuid of the graph.
      */
-    @ApiModelProperty(value = "The uuid of the node.", required = true)
     @NotBlank(message = Message.UUID_MUST_NOT_BE_BLANK)
+    @ApiModelProperty(value = "The uuid of the graph.", required = true)
     private String uuid;
 
     /**
-     * The properties of the node, please note that this is an overwrite operation,
-     * and the properties passed in will overwrite the existing ones.
+     * The filter properties of the graph. Query all data when the filter parameters is empty.
      */
-    @ApiModelProperty(value = "The properties of the node, please note that this is an overwrite operation,"
-            + " and the properties passed in will overwrite the existing ones.")
+    @ApiModelProperty(value = "The filter properties of the graph. Query all data when the filter parameters is empty.")
     private Map<String, String> properties;
 }

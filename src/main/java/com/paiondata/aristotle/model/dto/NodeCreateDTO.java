@@ -31,7 +31,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
- * Data Transfer Object (DTO) for creating nodes within a graph.
+ * Data Transfer Object (DTO) for creating nodes and adding relationships.
  *
  * This DTO is used to encapsulate the data required for creating nodes and their relations within a specific graph.
  */
@@ -66,7 +66,8 @@ public class NodeCreateDTO extends BaseEntity {
      *
      * @see NodeRelationDTO
      */
-    @ApiModelProperty(value = "The list of relations between nodes within the graph.")
+    @ApiModelProperty(value = "The list of relations between nodes within the graph. "
+            + "One can create nodes without passing this")
     @Valid
     private List<NodeRelationDTO> graphNodeRelationDTO;
 }

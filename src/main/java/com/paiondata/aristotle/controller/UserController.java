@@ -19,7 +19,6 @@ import com.paiondata.aristotle.common.base.Message;
 import com.paiondata.aristotle.common.base.Result;
 import com.paiondata.aristotle.model.dto.UserDTO;
 import com.paiondata.aristotle.model.vo.UserVO;
-import com.paiondata.aristotle.service.CommonService;
 import com.paiondata.aristotle.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -37,7 +36,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Controller for handling user-related operations.
@@ -50,16 +48,13 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private CommonService commonService;
-
     /**
-     * Retrieves a user by UID/CID.
+     * Retrieves a user and its graphs by UID/CID.
      *
      * @param uidcid the UID/CID of the user
-     * @return the result containing the user or an error message if not found
+     * @return the result containing the user and its graphs or an error message if not found
      */
-    @ApiOperation(value = "Retrieves a user by UID/CID")
+    @ApiOperation(value = "Retrieves a user and its graphs by UID/CID")
     @GetMapping("/{uidcid}")
     public Result<UserVO> getUser(@PathVariable @NotBlank(message = Message.UIDCID_MUST_NOT_BE_BLANK)
                                       final String uidcid) {
@@ -67,29 +62,15 @@ public class UserController {
     }
 
     /**
-     * Retrieves all users.
+     * Retrieves all users and their graphs.
      *
-     * @return the result containing a list of all users
+     * @return the result containing a list of all users and their graphs
      */
-    @ApiOperation(value = "Retrieves all users")
+    @ApiOperation(value = "Retrieves all users and their graphs")
     @GetMapping
     public Result<List<UserVO>> getAll() {
         final List<UserVO> allUsers = userService.getAllUsers();
         return Result.ok(allUsers);
-    }
-
-    /**
-     * Retrieves the graph data associated with a user by UID/CID.
-     *
-     * @param uidcid the UID/CID of the user
-     * @return the result containing the graph data or an error message if not found
-     */
-    @ApiOperation(value = "Retrieves the graph data associated with a user by UID/CID")
-    @GetMapping("/graph/{uidcid}")
-    public Result<List<Map<String, Object>>> getGraphByUserUidcid(
-            @PathVariable @NotBlank(message = Message.UIDCID_MUST_NOT_BE_BLANK) final String uidcid) {
-        final List<Map<String, Object>> results = commonService.getGraphsByUidcid(uidcid);
-        return Result.ok(results);
     }
 
     /**

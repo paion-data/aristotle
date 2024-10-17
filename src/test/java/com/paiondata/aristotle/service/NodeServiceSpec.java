@@ -47,7 +47,6 @@ import com.paiondata.aristotle.model.dto.NodeReturnDTO;
 import com.paiondata.aristotle.model.dto.NodeUpdateDTO;
 import com.paiondata.aristotle.model.dto.RelationUpdateDTO;
 import com.paiondata.aristotle.model.entity.Graph;
-import com.paiondata.aristotle.model.entity.GraphNode;
 import com.paiondata.aristotle.model.vo.NodeVO;
 import com.paiondata.aristotle.repository.NodeRepository;
 import com.paiondata.aristotle.service.impl.NodeServiceImpl;
@@ -196,7 +195,7 @@ public class NodeServiceSpec {
 
         when(nodeMapper.createNode(anyString(), anyString(), anyString(), anyString(), any(NodeDTO.class),
                 any(Transaction.class)))
-                .thenReturn((new GraphNode(0L, graphNodeUuid, Map.of(Constants.TITLE, TestConstants.TEST_TILE1,
+                .thenReturn((new NodeVO(graphNodeUuid, Map.of(Constants.TITLE, TestConstants.TEST_TILE1,
                         Constants.DESCRIPTION, TestConstants.TEST_DESCRIPTION1), currentTime, currentTime)));
         doNothing().when(nodeMapper).bindGraphNodeToGraphNode(anyString(), anyString(), anyString(), anyString(),
                 anyString(), any(Transaction.class));
@@ -264,7 +263,7 @@ public class NodeServiceSpec {
 
         when(nodeMapper.createNode(anyString(), anyString(), anyString(), anyString(), any(NodeDTO.class),
                 any(Transaction.class)))
-                .thenReturn((new GraphNode(0L, graphNodeUuid, Map.of(Constants.TITLE, TestConstants.TEST_TILE1,
+                .thenReturn((new NodeVO(graphNodeUuid, Map.of(Constants.TITLE, TestConstants.TEST_TILE1,
                         Constants.DESCRIPTION, TestConstants.TEST_DESCRIPTION1), currentTime, currentTime)));
         doNothing().when(nodeMapper).bindGraphNodeToGraphNode(anyString(), anyString(), anyString(), anyString(),
                 anyString(), any(Transaction.class));

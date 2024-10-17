@@ -38,7 +38,6 @@ import com.paiondata.aristotle.model.dto.NodeUpdateDTO;
 import com.paiondata.aristotle.model.dto.RelationUpdateDTO;
 import com.paiondata.aristotle.model.dto.NodeCreateDTO;
 import com.paiondata.aristotle.model.entity.Graph;
-import com.paiondata.aristotle.model.entity.GraphNode;
 import com.paiondata.aristotle.model.vo.NodeVO;
 import com.paiondata.aristotle.repository.NodeRepository;
 import com.paiondata.aristotle.service.CommonService;
@@ -217,15 +216,9 @@ public class NodeServiceImpl implements NodeService {
             final String nodeUuid = UUID.fastUUID().toString(true);
             final String relationUuid = UUID.fastUUID().toString(true);
 
-            for (final String key : dto.getProperties().keySet()) {
-                if (key.equals(Constants.UUID)
-                        || key.equals(Constants.CREATE_TIME)
-                        || key.equals(Constants.UPDATE_TIME)) {
-                    throw new IllegalArgumentException(Message.INPUT_PROPERTIES_ERROR + key);
-                }
-            }
+            checkInputParameters(dto.getProperties());
 
-            final GraphNode node = nodeMapper.createNode(graphUuid, nodeUuid, relationUuid, currentTime, dto, tx);
+            final NodeVO node = nodeMapper.createNode(graphUuid, nodeUuid, relationUuid, currentTime, dto, tx);
 
             final String resultUuid = node.getUuid();
 
@@ -417,5 +410,23 @@ public class NodeServiceImpl implements NodeService {
     private String getCurrentTime() {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
                 .format(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
+    }
+
+    /**
+     * Checks the input parameters for invalid keys.
+     * @param properties the input parameters
+     */
+    private void checkInputParameters(final Map<String, String> properties) {
+        final List<String> invalidKeys = new ArrayList<>();
+        for (final String key : properties.keySet()) {
+            if (key.equals(Constants.UUID)
+                    || key.equals(Constants.CREATE_TIME)
+                    || key.equals(Constants.UPDATE_TIME)) {
+                invalidKeys.add(key);
+            }
+        }
+        if (!invalidKeys.isEmpty()) {
+            throw new IllegalArgumentException(Message.INPUT_PROPERTIES_ERROR + invalidKeys);
+        }
     }
 }

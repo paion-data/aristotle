@@ -16,6 +16,8 @@
 package com.paiondata.aristotle.common.util;
 
 import com.paiondata.aristotle.common.base.Constants;
+import com.paiondata.aristotle.model.vo.NodeVO;
+
 import org.neo4j.driver.internal.value.NodeValue;
 import org.neo4j.driver.internal.value.RelationshipValue;
 import org.springframework.stereotype.Component;
@@ -81,30 +83,30 @@ public class NodeExtractor {
      *
      * @param node the node object
      *
-     * @return a map containing the extracted information
+     * @return the extracted node information
      *
      * @throws IllegalArgumentException if the input node is not a valid NodeValue
      */
-    public Map<String, Object> extractNode(final Object node) {
-        final Map<String, Object> nodeInfo = new HashMap<>();
+    public NodeVO extractNode(final Object node) {
+        final NodeVO nodeInfo = new NodeVO();
         if (node instanceof NodeValue) {
             final NodeValue nodeValue = (NodeValue) node;
             final Map<String, Object> nodeMap = nodeValue.asNode().asMap();
 
-            nodeInfo.put(Constants.UUID, nodeMap.get(Constants.UUID));
-            nodeInfo.put(Constants.UPDATE_TIME, nodeMap.get(Constants.UPDATE_TIME_WITHOUT_HUMP));
-            nodeInfo.put(Constants.CREATE_TIME, nodeMap.get(Constants.CREATE_TIME_WITHOUT_HUMP));
+            nodeInfo.setUuid((String) nodeMap.get(Constants.UUID));
+            nodeInfo.setCreateTime((String) nodeMap.get(Constants.CREATE_TIME_WITHOUT_HUMP));
+            nodeInfo.setUpdateTime((String) nodeMap.get(Constants.UPDATE_TIME_WITHOUT_HUMP));
 
-            final Map<String, Object> properties = new HashMap<>();
+            final Map<String, String> properties = new HashMap<>();
             for (final Map.Entry<String, Object> entry : nodeMap.entrySet()) {
                 if (!Constants.UUID.equals(entry.getKey())
                         && !Constants.UPDATE_TIME_WITHOUT_HUMP.equals(entry.getKey())
                         && !Constants.CREATE_TIME_WITHOUT_HUMP.equals(entry.getKey())) {
-                    properties.put(entry.getKey(), entry.getValue());
+                    properties.put(entry.getKey(), (String) entry.getValue());
                 }
             }
 
-            nodeInfo.put(Constants.PROPERTIES, properties);
+            nodeInfo.setProperties(properties);
         }
         return nodeInfo;
     }

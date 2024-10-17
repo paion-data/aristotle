@@ -149,4 +149,19 @@ public interface Constants {
      * Represents the graph node in cypher.
      */
     String GRAPH_IN_CYPHER = "g";
+
+    /**
+     * Represents the node alias in cypher.
+     */
+    String NODE_ALIAS_N1 = "n1";
+
+    /**
+     * Represents the node alias in cypher.
+     */
+    String NODE_ALIAS_N2 = "n2";
+
+    /**
+     * Represents the quote in cypher.
+     */
+    String QUOTE = "'";
 }

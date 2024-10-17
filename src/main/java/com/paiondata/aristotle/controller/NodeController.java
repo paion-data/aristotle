@@ -56,10 +56,10 @@ public class NodeController {
     private NodeService nodeService;
 
     /**
-     * Retrieves a graph node by UUID.
+     * Retrieves a node by UUID.
      *
-     * @param uuid the UUID of the graph node
-     * @return the result containing the graph node or an error message if not found
+     * @param uuid the UUID of the node
+     * @return the result containing the node or an error message if not found
      */
     @ApiOperation(value = "Retrieves a node by UUID")
     @GetMapping("/{uuid}")
@@ -70,10 +70,11 @@ public class NodeController {
     }
 
     /**
-     * Creates and binds a graph node.
+     * Creates and add relationships among several nodes.
+     * One can create nodes without binding any relations.
      *
      * @param graphNodeCreateDTO the DTO containing the graph node creation information
-     * @return the result indicating the success of the creation
+     * @return the created graph
      */
     @ApiOperation(value = "Creates and binds nodes",
             notes = "The nodes could be created without binding any relations")
@@ -84,9 +85,10 @@ public class NodeController {
 
     /**
      * Creates a graph and binds it with a graph node.
+     * One can create a graph without adding any nodes, or add nodes without adding any relationships
      *
      * @param graphNodeCreateDTO the DTO containing the graph and node creation information
-     * @return the result indicating the success of the creation
+     * @return the created graph and nodes
      */
     @ApiOperation(value = "Creates a graph and binds it with nodes",
             notes = "You can create just graphs, or just graphs and nodes without binding any relations between nodes")
@@ -111,6 +113,7 @@ public class NodeController {
 
     /**
      * Updates a graph node.
+     * Please note that this is an overwrite operation, and the properties passed in will overwrite the existing ones.
      *
      * @param nodeUpdateDTO the DTO containing the updated node information
      * @return the result indicating the success of the update
