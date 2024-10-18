@@ -41,27 +41,40 @@ public class NodeRelationDTO extends BaseEntity {
     /**
      * The UUID of the source node in the relation.
      *
+     * <p>
+     * This field is required and must not be blank. It uniquely identifies the source node in the relation.
+     *
      * @see Message#UUID_MUST_NOT_BE_BLANK
      */
-    @ApiModelProperty(value = "The UUID of the source node in the relation.", required = true)
+    @ApiModelProperty(value = "The UUID of the source node in the relation. "
+            + "This field is required and must not be blank.", required = true)
     @NotBlank(message = Message.UUID_MUST_NOT_BE_BLANK)
     private String fromId;
 
     /**
      * The UUID of the target node in the relation.
      *
+     * <p>
+     * This field is required and must not be blank. It uniquely identifies the target node in the relation.
+     *
      * @see Message#UUID_MUST_NOT_BE_BLANK
      */
-    @ApiModelProperty(value = "The UUID of the target node in the relation.", required = true)
+    @ApiModelProperty(value = "The UUID of the target node in the relation. "
+            + "This field is required and must not be blank.", required = true)
     @NotBlank(message = Message.UUID_MUST_NOT_BE_BLANK)
     private String toId;
 
     /**
      * The name of the relation between the two nodes.
      *
+     * <p>
+     * This field is required and must not be blank.
+     * It specifies the type of relation between the source and target nodes.
+     *
      * @see Message#RELATION_MUST_NOT_BE_BLANK
      */
-    @ApiModelProperty(value = "The name of the relation between the two nodes.", required = true)
+    @ApiModelProperty(value = "The name of the relation between the two nodes. "
+            + "This field is required and must not be blank.", required = true)
     @NotBlank(message = Message.RELATION_MUST_NOT_BE_BLANK)
     private String relationName;
 }

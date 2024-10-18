@@ -43,9 +43,13 @@ public class GraphAndNodeCreateDTO extends BaseEntity {
     /**
      * The details of the graph to be created.
      *
+     * <p>
+     * This field is required and must not be null. It contains the details of the graph that will be created.
+     *
      * @see GraphCreateDTO
      */
-    @ApiModelProperty(value = "The details of the graph to be created.", required = true)
+    @ApiModelProperty(value = "The details of the graph to be created. "
+            + "This field is required and must not be null.", required = true)
     @Valid
     @NotNull
     private GraphCreateDTO graphCreateDTO;
@@ -53,18 +57,26 @@ public class GraphAndNodeCreateDTO extends BaseEntity {
     /**
      * The list of nodes to be created within the graph.
      *
+     * <p>
+     * This field is optional. It contains a list of {@link NodeDTO} objects representing the nodes that will
+     * be created within the graph.
+     *
      * @see NodeDTO
      */
-    @ApiModelProperty(value = "The list of nodes to be created within the graph.")
+    @ApiModelProperty(value = "The list of nodes to be created within the graph. This field is optional.")
     @Valid
     private List<NodeDTO> graphNodeDTO;
 
     /**
      * The list of relations between nodes within the graph.
      *
+     * <p>
+     * This field is optional. It contains a list of {@link NodeRelationDTO} objects representing the relations
+     * between the nodes that will be created within the graph.
+     *
      * @see NodeRelationDTO
      */
-    @ApiModelProperty(value = "The list of relations between nodes within the graph.")
+    @ApiModelProperty(value = "The list of relations between nodes within the graph. This field is optional.")
     @Valid
     private List<NodeRelationDTO> graphNodeRelationDTO;
 }

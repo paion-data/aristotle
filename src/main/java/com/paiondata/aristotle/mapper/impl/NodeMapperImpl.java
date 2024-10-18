@@ -18,10 +18,11 @@ package com.paiondata.aristotle.mapper.impl;
 import com.paiondata.aristotle.common.base.Constants;
 import com.paiondata.aristotle.common.util.NodeExtractor;
 import com.paiondata.aristotle.mapper.NodeMapper;
+import com.paiondata.aristotle.model.dto.GetRelationDTO;
 import com.paiondata.aristotle.model.dto.NodeDTO;
 import com.paiondata.aristotle.model.dto.NodeUpdateDTO;
-import com.paiondata.aristotle.model.entity.GraphNode;
 import com.paiondata.aristotle.model.vo.NodeVO;
+import com.paiondata.aristotle.model.vo.RelationVO;
 
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.Record;
@@ -33,11 +34,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Iterator;
 
 /**
  * Repository class for executing Cypher queries related to nodes in Neo4j.
@@ -63,10 +63,13 @@ public class NodeMapperImpl implements NodeMapper {
     /**
      * Retrieves a node by its UUID.
      *
+     * Constructs a Cypher query to match a node by its UUID and return it.
+     * Executes the Cypher query within a read transaction using the Neo4j session.
+     * Extracts the node details from the query result and returns a {@link NodeVO} object.
+     * If no node is found, returns {@code null}.
+     *
      * @param uuid the UUID of the node to retrieve
-     *
-     * @return the NodeVO representing the retrieved node
-     *
+     * @return a {@link NodeVO} object representing the node, or {@code null} if no node is found
      */
     @Override
     public NodeVO getNodeByUuid(final String uuid) {
@@ -76,33 +79,36 @@ public class NodeMapperImpl implements NodeMapper {
             return session.readTransaction(tx -> {
                 final var result = tx.run(cypherQuery, Values.parameters(Constants.UUID, uuid));
 
-                Map<String, Object> n = null;
+                NodeVO n = null;
                 while (result.hasNext()) {
                     final Record record = result.next();
                     n = nodeExtractor.extractNode(record.get("n"));
                 }
 
-                return new NodeVO((String) n.get(Constants.UUID), (Map<String, String>) n.get(Constants.PROPERTIES),
-                        (String) n.get(Constants.CREATE_TIME), (String) n.get(Constants.UPDATE_TIME));
+                return n;
             });
         }
     }
 
     /**
-     * Creates a new node within a graph.
+     * Creates a new node and associates it with a graph.
      *
-     * @param graphUuid the UUID of the graph where the node will be created
+     * Constructs a Cypher query to match a graph by its UUID, update its update time, <br>
+     * create a new node with the provided details,
+     * and establish a relationship between the graph and the new node.
+     * Executes the Cypher query using the provided transaction.
+     * Extracts the node details from the query result and returns a {@link NodeVO} object.
+     *
+     * @param graphUuid the UUID of the graph to which the node will be added
      * @param nodeUuid the UUID of the new node
-     * @param relationUuid the UUID of the link between the created node and the graph this node belongs to
-     * @param currentTime the current time for creating the node
-     * @param nodeDTO the DTO containing node details
-     * @param tx the transaction in which the operation will be performed
-     *
-     * @return the created GraphNode
-     *
+     * @param relationUuid the UUID of the relationship between the graph and the new node
+     * @param currentTime the current timestamp for creation and update times
+     * @param nodeDTO the DTO containing the properties of the new node
+     * @param tx the Neo4j transaction to execute the Cypher query
+     * @return a {@link NodeVO} object representing the newly created node
      */
     @Override
-    public GraphNode createNode(final String graphUuid, final String nodeUuid, final String relationUuid,
+    public NodeVO createNode(final String graphUuid, final String nodeUuid, final String relationUuid,
                                 final String currentTime, final NodeDTO nodeDTO, final Transaction tx) {
         final StringBuilder setProperties = getSetProperties(nodeDTO.getProperties().entrySet());
 
@@ -124,83 +130,83 @@ public class NodeMapperImpl implements NodeMapper {
         );
 
         final Record record = result.next();
-        final Map<String, Object> objectMap = nodeExtractor.extractNode(record.get("gn"));
 
-        return GraphNode.builder()
-                .id((Long) objectMap.get(Constants.ID))
-                .uuid((String) objectMap.get(Constants.UUID))
-                .properties((Map<String, String>) objectMap.get(Constants.PROPERTIES))
-                .createTime((String) objectMap.get(Constants.CREATE_TIME))
-                .updateTime((String) objectMap.get(Constants.UPDATE_TIME))
-                .build();
+        return nodeExtractor.extractNode(record.get("gn"));
     }
 
     /**
-     * Retrieves nodes by the UUID of a graph.
+     * Retrieves the relationships and nodes associated with a graph by its UUID.
+     *
+     * Constructs a Cypher query to match a graph by its UUID and find its related nodes and relationships.
+     * Optionally filters the nodes based on the provided properties.
+     * Executes the Cypher query within a read transaction using the Neo4j session.
+     * Extracts the node and relationship details from the query results and <br>
+     * returns them in a {@link GetRelationDTO} object.
      *
      * @param uuid the UUID of the graph
-     *
-     * @return a list of maps containing node and relationship information
-     *
+     * @param properties a map of properties to filter the nodes (optional)
+     * @return a {@link GetRelationDTO} object containing the list of relationships and nodes
      */
     @Override
-    public List<Map<String, Map<String, Object>>> getNodesByGraphUuid(final String uuid) {
+    public GetRelationDTO getRelationByGraphUuid(final String uuid, final Map<String, String> properties) {
         final String cypherQuery = "MATCH (g1:Graph { uuid: $uuid }) "
                 + "OPTIONAL MATCH (g1)-[:RELATION]->(n1:GraphNode) "
-                + "OPTIONAL MATCH (n1)-[r:RELATION]->(n2:GraphNode) "
-                + "RETURN DISTINCT n1, r, n2";
+                + (properties != null && !properties.isEmpty() ?
+                getFilterProperties(Constants.NODE_ALIAS_N1, properties.entrySet()) : "")
+                + " OPTIONAL MATCH (n1)-[r:RELATION]->(n2:GraphNode) "
+                + (properties != null && !properties.isEmpty() ?
+                getFilterProperties(Constants.NODE_ALIAS_N2, properties.entrySet()) : "")
+                + " RETURN DISTINCT n1, r, n2";
 
         try (Session session = driver.session(SessionConfig.builder().build())) {
             return session.readTransaction(tx -> {
                 final var result = tx.run(cypherQuery, Values.parameters(Constants.UUID, uuid));
-                final List<Map<String, Map<String, Object>>> resultList = new ArrayList<>();
+                final List<RelationVO> relations = new ArrayList<>();
+                final Set<NodeVO> nodes = new HashSet<>();
 
                 while (result.hasNext()) {
                     final Record record = result.next();
-                    final Map<String, Object> n1 = nodeExtractor.extractNode(record.get("n1"));
-                    final Map<String, Object> n2 = nodeExtractor.extractNode(record.get("n2"));
+                    final NodeVO n1 = nodeExtractor.extractNode(record.get(Constants.NODE_ALIAS_N1));
+                    nodes.add(n1);
+
+                    if (record.get(Constants.NODE_ALIAS_N2) == null ||
+                            "NULL".equals(record.get(Constants.NODE_ALIAS_N2).toString())) {
+                        continue;
+                    }
+
+                    final NodeVO n2 = nodeExtractor.extractNode(record.get(Constants.NODE_ALIAS_N2));
+                    nodes.add(n2);
                     final Map<String, Object> relation = nodeExtractor.extractRelationship(record.get("r"));
 
-                    final Map<String, Map<String, Object>> combinedResult = new HashMap<>();
-                    combinedResult.put(Constants.START_NODE, n1);
-                    combinedResult.put("relation", relation);
-                    combinedResult.put(Constants.END_NODE, n2);
+                    final RelationVO relationVO = new RelationVO();
+                    relationVO.setSourceNode(n1.getUuid());
+                    relationVO.setTargetNode(n2.getUuid());
+                    relationVO.setUuid((String) relation.get(Constants.UUID));
+                    relationVO.setName((String) relation.get(Constants.NAME));
+                    relationVO.setCreateTime((String) relation.get(Constants.CREATE_TIME));
+                    relationVO.setUpdateTime((String) relation.get(Constants.UPDATE_TIME));
 
-                    resultList.add(combinedResult);
+                    relations.add(relationVO);
                 }
 
-                final Iterator<Map<String, Map<String, Object>>> iterator = resultList.iterator();
-                while (iterator.hasNext()) {
-                    final Map<String, Map<String, Object>> current = iterator.next();
-                    if (current.get(Constants.END_NODE).isEmpty()) {
-                        boolean removeFlag = false;
-                        for (final Map<String, Map<String, Object>> other : resultList) {
-                            if (current.get(Constants.START_NODE).equals(other.get(Constants.END_NODE))
-                                    && !other.get(Constants.START_NODE).equals(other.get(Constants.END_NODE))) {
-                                removeFlag = true;
-                                break;
-                            }
-                        }
-                        if (removeFlag) {
-                            iterator.remove();
-                        }
-                    }
-                }
-
-                return resultList;
+                return new GetRelationDTO(relations, new ArrayList<>(nodes));
             });
         }
     }
 
     /**
-     * Binds two graph nodes together with a specified relation.
+     * Binds two graph nodes together with a specified relationship.
+     *
+     * Constructs a Cypher query to match two graph nodes by their UUIDs, update their update times,
+     * and create a relationship between them.
+     * Executes the Cypher query using the provided transaction.
      *
      * @param uuid1 the UUID of the first graph node
      * @param uuid2 the UUID of the second graph node
-     * @param relation the name of the relation
-     * @param relationUuid the UUID of the link between the created node and the graph this node belongs to
-     * @param currentTime the current time for updating the nodes and relation
-     * @param tx the transaction in which the operation will be performed
+     * @param relation the name of the relationship to create
+     * @param relationUuid the UUID of the relationship
+     * @param currentTime the current timestamp for creation and update times
+     * @param tx the Neo4j transaction to execute the Cypher query
      */
     @Override
     public void bindGraphNodeToGraphNode(final String uuid1, final String uuid2, final String relation,
@@ -222,12 +228,15 @@ public class NodeMapperImpl implements NodeMapper {
     }
 
     /**
-     * Updates a node by its UUID.
+     * Updates a graph node by its UUID.
      *
-     * @param nodeUpdateDTO the DTO containing updated node properties
-     * @param currentTime the current time for updating the node
-     * @param tx the transaction in which the operation will be performed
+     * Constructs a Cypher query to match a graph node by its UUID and update its properties.
+     * The query dynamically includes only the fields that need to be updated based on the provided properties.
+     * Executes the Cypher query using the provided transaction.
      *
+     * @param nodeUpdateDTO the DTO containing the updated properties of the node
+     * @param currentTime the current timestamp for the update time
+     * @param tx the Neo4j transaction to execute the Cypher query
      */
     @Override
     public void updateNodeByUuid(final NodeUpdateDTO nodeUpdateDTO, final String currentTime, final Transaction tx) {
@@ -246,18 +255,50 @@ public class NodeMapperImpl implements NodeMapper {
     }
 
     /**
-     * Generates a StringBuilder with property assignments for Cypher queries.
+     * Generates a string builder containing the SET properties clause for a Cypher query.
      *
-     * @param entries the set of property entries
+     * Iterates through the provided map entries and appends each key-value pair to the string builder
+     * in the format suitable for a Cypher query's SET clause.
+     * The resulting string builder can be used to dynamically construct the SET part of a Cypher query.
      *
-     * @return a StringBuilder with formatted property assignments
+     * @param entries the set of map entries containing the properties to set
+     * @return a {@link StringBuilder} object containing the SET properties clause
      */
     private StringBuilder getSetProperties(final Set<Map.Entry<String, String>> entries) {
         final StringBuilder setProperties = new StringBuilder();
         for (final Map.Entry<String, String> entry : entries) {
-            setProperties.append(", ").append(entry.getKey()).append(": '").append(entry.getValue()).append("'");
+            setProperties.append(", ").append(entry.getKey()).append(": '").append(entry.getValue())
+                    .append(Constants.QUOTE);
         }
 
         return setProperties;
+    }
+
+    /**
+     * Generates a string builder containing the filter properties clause for a Cypher query.
+     *
+     * Iterates through the provided map entries and appends each key-value pair to the string builder
+     * in the format suitable for a Cypher query's WHERE clause.
+     * The resulting string builder can be used to dynamically construct the WHERE part of a Cypher query.
+     *
+     * @param node the alias of the node to apply the filters to
+     * @param entries the set of map entries containing the properties to filter
+     * @return a {@link StringBuilder} object containing the filter properties clause
+     */
+    private StringBuilder getFilterProperties(final String node, final Set<Map.Entry<String, String>> entries) {
+        final StringBuilder filterProperties = new StringBuilder();
+        filterProperties.append("WHERE ");
+
+        boolean isFirstEntry = true;
+        for (final Map.Entry<String, String> entry : entries) {
+            if (!isFirstEntry) {
+                filterProperties.append(" AND ");
+            }
+            filterProperties.append(node).append(".").append(entry.getKey()).append(" = '")
+                    .append(entry.getValue()).append(Constants.QUOTE);
+            isFirstEntry = false;
+        }
+
+        return filterProperties;
     }
 }

@@ -42,21 +42,31 @@ public class GraphUpdateDTO extends BaseEntity {
     /**
      * The unique identifier (UUID) of the graph or node.
      *
+     * <p>
+     * This field is required and must not be blank. It uniquely identifies the graph or node that needs to be updated.
+     *
      * @see Message#UUID_MUST_NOT_BE_BLANK
      */
-    @ApiModelProperty(value = "The unique identifier (UUID) of the graph or node.", required = true)
+    @ApiModelProperty(value = "The unique identifier (UUID) of the graph or node. "
+            + "This field is required and must not be blank.", required = true)
     @NotBlank(message = Message.UUID_MUST_NOT_BE_BLANK)
     private String uuid;
 
     /**
      * The updated title of the graph or node.
+     *
+     * <p>
+     * This field is optional. If provided, it will update the title of the graph or node.
      */
-    @ApiModelProperty(value = "The updated title of the graph or node.")
+    @ApiModelProperty(value = "The updated title of the graph or node. This field is optional.")
     private String title;
 
     /**
      * The updated description of the graph or node.
+     *
+     * <p>
+     * This field is optional. If provided, it will update the description of the graph or node.
      */
-    @ApiModelProperty(value = "The updated description of the graph or node.")
+    @ApiModelProperty(value = "The updated description of the graph or node. This field is optional.")
     private String description;
 }

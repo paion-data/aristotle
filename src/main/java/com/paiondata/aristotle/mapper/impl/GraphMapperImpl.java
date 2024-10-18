@@ -56,15 +56,21 @@ public class GraphMapperImpl implements GraphMapper {
     }
 
     /**
-     * Creates a new graph with the specified properties.
+     * Creates a new graph and associates it with a user.
+     *
+     * Constructs a Cypher query to match a user by their uidcid, create a new graph with the provided details,
+     * and establish a relationship between the user and the graph.
+     * Executes the Cypher query using the provided transaction.
+     * Extracts the graph details from the query result and returns a {@link Graph} object.
+     *
      * @param title the title of the graph
      * @param description the description of the graph
-     * @param userUidcid the UIDCID of the user
+     * @param userUidcid the uidcid of the user who owns the graph
      * @param graphUuid the UUID of the graph
-     * @param relationUuid the UUID of the link between the created node and the graph this node belongs to
-     * @param currentTime the current time
-     * @param tx the Neo4j transaction
-     * @return the created Graph object
+     * @param relationUuid the UUID of the relationship between the user and the graph
+     * @param currentTime the current timestamp for creation and update times
+     * @param tx the Neo4j transaction to execute the Cypher query
+     * @return a {@link Graph} object representing the newly created graph
      */
     public Graph createGraph(final String title, final String description, final String userUidcid,
                              final String graphUuid, final String relationUuid, final String currentTime,
@@ -100,11 +106,14 @@ public class GraphMapperImpl implements GraphMapper {
     }
 
     /**
-     * Retrieves users' associated graphs by UIDCID.
+     * Retrieves a list of graphs associated with a user by their unique identifier (uidcid).
      *
-     * @param uidcid the UIDCID of the user
+     * Constructs a Cypher query to match a user by their uidcid and retrieve all graphs they are related to.
+     * Executes the Cypher query within a read transaction using the Neo4j session.
+     * Extracts the graph details from the query results and returns a list of maps, where each map represents a graph.
      *
-     * @return a list of maps containing user information and associated graphs
+     * @param uidcid the unique identifier of the user
+     * @return a list of maps, where each map contains the details of a graph associated with the user
      */
     @Override
     public List<Map<String, Object>> getGraphsByUidcid(final String uidcid) {
@@ -126,15 +135,18 @@ public class GraphMapperImpl implements GraphMapper {
     }
 
     /**
-     * Updates a graph by its UUID.
+     * Updates the details of a graph by its UUID.
      *
-     * @param uuid the UUID of the graph
-     * @param title the new title of the graph
-     * @param description the new description of the graph
-     * @param currentTime the current time for update
-     * @param tx the Neo4j transaction
+     * Constructs a Cypher query to match a graph by its UUID and update its title, description, and update time.
+     * The query dynamically includes only the fields that need to be updated based on the provided parameters.
+     * Executes the Cypher query using the provided transaction.
+     *
+     * @param uuid the UUID of the graph to be updated
+     * @param title the new title of the graph (optional)
+     * @param description the new description of the graph (optional)
+     * @param currentTime the current timestamp for the update time
+     * @param tx the Neo4j transaction to execute the Cypher query
      */
-
     @Override
     public void updateGraphByUuid(final String uuid, final String title,
                                   final String description, final String currentTime, final Transaction tx) {

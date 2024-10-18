@@ -29,7 +29,7 @@ import java.util.Map;
 /**
  * Represents a node entity within a graph.
  *
- * This class encapsulates the properties and metadata of a graph node.
+ * This class encapsulates the properties and metadata of a node.
  */
 @Data
 @Builder
@@ -39,26 +39,26 @@ import java.util.Map;
 public class NodeVO extends BaseEntity {
 
     /**
-     * The UUID of the graph node.
+     * The UUID of the node.
      */
-    @ApiModelProperty(value = "The UUID of the graph")
+    @ApiModelProperty(value = "The UUID of the node")
     private String uuid;
 
     /**
-     * The properties of the graph node.
+     * The properties of the node.
      */
-    @ApiModelProperty(value = "The properties of the graph node")
+    @ApiModelProperty(value = "The properties of the node")
     private Map<String, String> properties;
 
     /**
-     * The creation time of the graph node.
+     * The creation time of the node.
      */
-    @ApiModelProperty(value = "The creation time of the graph node")
+    @ApiModelProperty(value = "The creation time of the node")
     private String createTime;
 
     /**
-     * The last update time of the graph node.
+     * The last update time of the node.
      */
-    @ApiModelProperty(value = "The last update time of the graph node")
+    @ApiModelProperty(value = "The last update time of the node")
     private String updateTime;
 }

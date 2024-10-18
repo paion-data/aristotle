@@ -39,26 +39,64 @@ import java.util.Map;
 public class NodeReturnDTO extends BaseEntity {
 
     /**
-     * The uuid of the node.
+     * The unique identifier (UUID) of the node.
+     *
+     * <p>
+     * This field is the unique identifier for the node.
+     * It is typically a UUID and is used to reference the node in other parts of the system.
+     * </p>
+     *
+     * @example "123e4567e89b12d3a456426614174001"
      */
-    @ApiModelProperty(value = "The temporary identifier of the node.")
+    @ApiModelProperty(value = "The unique identifier (UUID) of the node. This field is the unique identifier " +
+            "for the node. It is typically a UUID and is used to reference the node in other parts of the system.",
+            example = "123e4567e89b12d3a456426614174001")
     private String uuid;
 
     /**
-     * The create time of the node.
+     * The creation time of the node.
+     *
+     * <p>
+     * This field indicates when the node was created. It is a string representation of the creation time
+     *
+     * @example "2024-10-18 13:48:33"
      */
-    @ApiModelProperty(value = "The create time of the node.")
+    @ApiModelProperty(value = "The creation time of the node. This field indicates when the node was created. "
+            + "It is a string representation of the creation time.", example = "2024-10-18 13:48:33")
     private String createTime;
 
     /**
      * The update time of the node.
+     *
+     * <p>
+     * This field indicates when the node was last updated. It is a string representation of the update time.
+     *
+     * @example "2024-10-18 13:48:33"
      */
-    @ApiModelProperty(value = "The update time of the node.")
+    @ApiModelProperty(value = "The update time of the node. This field indicates when the node was last updated. "
+            + "It is a string representation of the update time.", example = "2024-10-18 13:48:33")
     private String updateTime;
 
     /**
      * The properties of the node.
+     *
+     * <p>
+     * This field is a map of node attributes. Each key in the map represents an attribute name, and the corresponding
+     * value represents the attribute value. These attributes can include any relevant information about the node.
+     *
+     * @example {
+     *   "name": "Peter",
+     *   "age": "30",
+     *   "position": "Software Engineer"
+     * }
      */
-    @ApiModelProperty(value = "properties")
+    @ApiModelProperty(value = "The properties of the node. This field is a map of node attributes."
+            + "Each key in the map represents an attribute name, and the corresponding value represents the "
+            + "attribute value. These attributes can include any relevant information about the node.",
+            example = "{\n" +
+            "  \"name\": \"Peter\",\n" +
+            "  \"age\": \"30\",\n" +
+            "  \"position\": \"Software Engineer\"\n" +
+            "}")
     private Map<String, String> properties;
 }

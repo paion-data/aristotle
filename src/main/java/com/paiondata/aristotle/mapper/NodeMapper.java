@@ -15,14 +15,12 @@
  */
 package com.paiondata.aristotle.mapper;
 
+import com.paiondata.aristotle.model.dto.GetRelationDTO;
 import com.paiondata.aristotle.model.dto.NodeDTO;
 import com.paiondata.aristotle.model.dto.NodeUpdateDTO;
-import com.paiondata.aristotle.model.entity.GraphNode;
 import com.paiondata.aristotle.model.vo.NodeVO;
 
 import org.neo4j.driver.Transaction;
-
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -48,15 +46,16 @@ public interface NodeMapper {
      * @param tx the Neo4j transaction
      * @return the created Node object
      */
-    GraphNode createNode(String graphUuid, String nodeUuid, String relationUuid,
+    NodeVO createNode(String graphUuid, String nodeUuid, String relationUuid,
                                 String currentTime, NodeDTO nodeDTO, Transaction tx);
 
     /**
-     * Retrieves all nodes associated with a specific graph.
+     * Retrieves all relationships by graph uuid.
      * @param uuid the UUID of the graph
-     * @return the list of nodes associated with the specified graph
+     * @param properties the filter properties of the node
+     * @return Data Transfer Object (DTO) contains relations and nodes
      */
-    List<Map<String, Map<String, Object>>> getNodesByGraphUuid(String uuid);
+    GetRelationDTO getRelationByGraphUuid(String uuid, Map<String, String> properties);
 
     /**
      * Binds two graph nodes with a specified relationship.

@@ -41,27 +41,43 @@ public class BindNodeDTO extends BaseEntity {
     /**
      * The ID of the source node.
      *
+     * <p>
+     * This field is required and must not be blank. It uniquely identifies the source node in the system.
+     * The ID is typically a UUID.
+     *
      * @see Message#UUID_MUST_NOT_BE_BLANK
      */
-    @ApiModelProperty(value = "The ID of the source node.", required = true)
+    @ApiModelProperty(value = "The ID of the source node. This field is required and must not be blank. "
+            + "It uniquely identifies the source node in the system. The ID is typically a UUID.", required = true)
     @NotBlank(message = Message.UUID_MUST_NOT_BE_BLANK)
     private String fromId;
 
     /**
      * The ID of the target node.
      *
+     * <p>
+     * This field is required and must not be blank. It uniquely identifies the target node in the system.
+     * The ID is typically a UUID.
+     *
      * @see Message#UUID_MUST_NOT_BE_BLANK
      */
-    @ApiModelProperty(value = "The ID of the target node.", required = true)
+    @ApiModelProperty(value = "The ID of the target node. This field is required and must not be blank. "
+            + "It uniquely identifies the target node in the system. The ID is typically a UUID.", required = true)
     @NotBlank(message = Message.UUID_MUST_NOT_BE_BLANK)
     private String toId;
 
     /**
      * The name of the relationship between the source and target nodes.
      *
+     * <p>
+     * This field is required and must not be blank. It specifies the type of relationship between the source and
+     * target nodes. For example, "FRIEND_OF", "WORKS_AT", etc.
+     *
      * @see Message#RELATION_MUST_NOT_BE_BLANK
      */
-    @ApiModelProperty(value = "The name of the relationship between the source and target nodes.", required = true)
+    @ApiModelProperty(value = "The name of the relationship between the source and target nodes. "
+            + "This field is required and must not be blank. It specifies the type of relationship between the source "
+            + "and target nodes. For example, 'FRIEND_OF', 'WORKS_AT', etc.", required = true)
     @NotBlank(message = Message.RELATION_MUST_NOT_BE_BLANK)
     private String relationName;
 }

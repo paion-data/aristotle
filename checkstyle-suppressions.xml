@@ -5,6 +5,6 @@
      "http://www.puppycrawl.com/dtds/suppressions_1_0.dtd">
 
 <suppressions>
-    <suppress checks="IllegalCatch" files=".*Neo4jTransactionAspect.java" lines="75"/>
-    <suppress checks="IllegalThrows" files=".*Neo4jTransactionAspect.java" lines="58"/>
+    <suppress checks="IllegalCatch" files=".*Neo4jTransactionAspect.java" lines="79"/>
+    <suppress checks="IllegalThrows" files=".*Neo4jTransactionAspect.java" lines="62"/>
 </suppressions>

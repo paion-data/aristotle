@@ -25,6 +25,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.neo4j.driver.Session;
 import org.neo4j.driver.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -41,6 +43,8 @@ import javax.annotation.Resource;
 @Component
 @Order(1)
 public class Neo4jTransactionAspect {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Neo4jTransactionAspect.class);
 
     @Resource
     private TransactionManager neo4jTransactionManager;
@@ -76,6 +80,9 @@ public class Neo4jTransactionAspect {
             if (tx != null) {
                 neo4jTransactionManager.rollbackTransaction(tx);
             }
+
+            final String message = e.getMessage();
+            LOG.error(message);
             throw e;
         } finally {
             closeTransaction(tx);
@@ -99,7 +106,9 @@ public class Neo4jTransactionAspect {
         }
 
         if (!transactionInjected) {
-            throw new TransactionException(Message.METHOD_WITHOUT_TRANSACTION);
+            final String message = Message.METHOD_WITHOUT_TRANSACTION;
+            LOG.error(message);
+            throw new TransactionException(message);
         }
     }
 

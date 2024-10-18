@@ -28,6 +28,9 @@ import com.paiondata.aristotle.service.CommonService;
 import com.paiondata.aristotle.service.UserService;
 
 import lombok.AllArgsConstructor;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -44,6 +47,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(UserServiceImpl.class);
+
     @Autowired
     private UserRepository userRepository;
 
@@ -57,10 +62,16 @@ public class UserServiceImpl implements UserService {
     private CommonService commonService;
 
     /**
-     * Retrieves a UserVO by UIDCID.
+     * Retrieves a user view object (VO) by their unique identifier (uidcid).
      *
-     * @param uidcid the UIDCID of the user
-     * @return the UserVO containing user details and associated graphs
+     * Attempts to find the user by their uidcid using the {@link UserRepository#getUserByUidcid(String)} method.
+     * Throws a {@link UserNullException} if the user is not found.
+     * Constructs and returns a {@link UserVO} object containing the user's details and their associated graphs.
+     * The associated graphs are retrieved using the {@link CommonService#getGraphsByUidcid(String)} method.
+     *
+     * @param uidcid the unique identifier of the user
+     * @return a {@link UserVO} object representing the user and their associated graphs
+     * @throws UserNullException if the user with the specified uidcid is not found
      */
     @Transactional(readOnly = true)
     @Override
@@ -68,7 +79,9 @@ public class UserServiceImpl implements UserService {
         final User user = userRepository.getUserByUidcid(uidcid);
 
         if (user == null) {
-            throw new UserNullException(Message.USER_NULL + uidcid);
+            final String message = Message.USER_NULL + uidcid;
+            LOG.error(message);
+            throw new UserNullException(message);
         }
 
         return UserVO.builder()
@@ -79,9 +92,14 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Retrieves all users as UserVOs.
+     * Retrieves a list of all users as user view objects (VOs).
      *
-     * @return a list of UserVOs containing user details and associated graphs
+     * Retrieves all users from the repository using the {@link UserRepository#findAll()} method.
+     * Maps each user to a {@link UserVO} object containing the user's details and their associated graphs.
+     * The associated graphs are retrieved using the {@link CommonService#getGraphsByUidcid(String)} method.
+     * Returns a list of {@link UserVO} objects.
+     *
+     * @return a list of {@link UserVO} objects representing all users and their associated graphs
      */
     @Transactional(readOnly = true)
     @Override
@@ -99,9 +117,16 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Creates a new user.
-     * @param user the UserCreateDTO containing user details
+     * <p>
+     * Attempts to create a new user in the repository using
+     * the {@link UserRepository#createUser(String, String)} method.
+     * If the user creation fails due to a data integrity violation (e.g., duplicate uidcid),
+     * a {@link UserExistsException} is thrown.
+     * Returns a {@link UserDTO} object containing the details of the newly created user.
      *
-     * @return the UserDTO containing the created user details
+     * @param user the {@link UserDTO} object containing the user's details
+     * @return a {@link UserDTO} object representing the newly created user
+     * @throws UserExistsException if a user with the same uidcid already exists
      */
     @Transactional
     @Override
@@ -112,14 +137,22 @@ public class UserServiceImpl implements UserService {
             final User returnUser = userRepository.createUser(uidcid, user.getNickName());
             return new UserDTO(returnUser.getUidcid(), returnUser.getNickName());
         } catch (final DataIntegrityViolationException e) {
-            throw new UserExistsException(Message.UIDCID_EXISTS + uidcid);
+            final String message = Message.UIDCID_EXISTS + uidcid;
+            LOG.error(message);
+            throw new UserExistsException(message);
         }
     }
 
     /**
      * Updates an existing user.
      *
-     * @param userDTO the UserDTO containing updated user details
+     * Checks if a user with the given uidcid exists using the {@link UserRepository#checkUidcidExists(String)} method.
+     * If the user exists, updates the user's nickname using
+     * the {@link UserRepository#updateUser(String, String)} method.
+     * If the user does not exist, throws a {@link UserNullException}.
+     *
+     * @param userDTO the {@link UserDTO} object containing the updated user details
+     * @throws UserNullException if the user with the specified uidcid does not exist
      */
     @Transactional
     @Override
@@ -129,21 +162,35 @@ public class UserServiceImpl implements UserService {
         if (userRepository.checkUidcidExists(uidcid) != 0) {
             userRepository.updateUser(uidcid, userDTO.getNickName());
         } else {
-            throw new UserNullException(Message.USER_NULL + uidcid);
+            final String message = Message.USER_NULL + uidcid;
+            LOG.error(message);
+            throw new UserNullException(message);
         }
     }
 
     /**
-     * Deletes multiple users along with their related graphs and graph nodes.
+     * Deletes multiple users and their related graphs and nodes.
+     * <p>
+     * Iterates through the provided list of user identifiers (uidcids) and checks if each user exists using
+     * the {@link CommonService#getUserByUidcid(String)} method.
+     * Throws a {@link UserNullException} if any user does not exist.
+     * Retrieves the UUIDs of graphs related to the users using the {@link #getRelatedGraphUuids(List)} method.
+     * Retrieves the UUIDs of nodes related to the graphs using the {@link #getRelatedGraphNodeUuids(List)} method.
+     * Deletes the users from the user repository using the {@link UserRepository#deleteByUidcids(List)} method.
+     * Deletes the related graph from the graph repository using the {@link GraphRepository#deleteByUuids(List)} method.
+     * Deletes the related nodes from the node repository using the {@link NodeRepository#deleteByUuids(List)} method.
      *
-     * @param uidcids a list of UIDCIDs of the users to be deleted
+     * @param uidcids the list of user identifiers to be deleted
+     * @throws UserNullException if any user with the specified uidcid does not exist
      */
     @Transactional
     @Override
     public void deleteUser(final List<String> uidcids) {
         for (final String uidcid : uidcids) {
             if (commonService.getUserByUidcid(uidcid).isEmpty()) {
-                throw new UserNullException(Message.USER_NULL + uidcid);
+                final String message = Message.USER_NULL + uidcid;
+                LOG.error(message);
+                throw new UserNullException(message);
             }
         }
 

@@ -17,6 +17,7 @@ package com.paiondata.aristotle.controller;
 
 import com.paiondata.aristotle.common.base.Message;
 import com.paiondata.aristotle.common.base.Result;
+import com.paiondata.aristotle.model.dto.FilterQueryGraphDTO;
 import com.paiondata.aristotle.model.dto.GraphDeleteDTO;
 import com.paiondata.aristotle.model.dto.GraphUpdateDTO;
 import com.paiondata.aristotle.model.vo.GraphVO;
@@ -24,8 +25,7 @@ import com.paiondata.aristotle.service.GraphService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 
 /**
  * Controller for handling graph-related operations.
@@ -47,27 +46,35 @@ public class GraphController {
     private GraphService graphService;
 
     /**
-     * Retrieves a graph and its nodes by UUID.
+     * Retrieves a graph by its UUID and filter parameters.
+     * <p>
+     * This method handles a POST request to retrieve a graph based on the provided UUID and filter parameters.
+     * It validates the input DTO and calls the graph service to fetch the graph data.
+     * The result is wrapped in a {@link Result} object and returned.
      *
-     * @param uuid the UUID of the graph
-     * @return the result containing the graph and its nodes
+     * @param dto the {@link FilterQueryGraphDTO} containing the UUID and filter parameters
+     * @return a {@link Result} object containing the graph data as a {@link GraphVO}
      */
-    @ApiOperation(value = "Retrieves a graph and its nodes by UUID")
-    @GetMapping("/{uuid}")
-    public Result<GraphVO> getGraphAndNodesByGraphUuid(
-            @PathVariable @NotBlank(message = Message.UUID_MUST_NOT_BE_BLANK) final String uuid) {
-        return Result.ok(graphService.getGraphVOByUuid(uuid));
+    @ApiOperation(value = "Retrieve the graph by uuid and filter parameters")
+    @PostMapping
+    public Result<GraphVO> getGraphByUuidAndFilterParams(@RequestBody @Valid final FilterQueryGraphDTO dto) {
+        return Result.ok(graphService.getGraphVOByUuid(dto));
     }
 
     /**
      * Updates a graph.
      *
-     * @param graphUpdateDTO the DTO containing the updated graph information
-     * @return the result indicating the success of the update
+     * <p>
+     * This method handles a PUT request to update a graph based on the provided update DTO.
+     * It validates the input DTO and calls the graph service to perform the update.
+     * The result is wrapped in a {@link Result} object with a success message.
+     *
+     * @param graphUpdateDTO the {@link GraphUpdateDTO} containing the updated graph information
+     * @return a {@link Result} object containing a success message
      */
     @ApiOperation(value = "Updates a graph")
     @PutMapping
-    public Result<String> updateGraph(@RequestBody final GraphUpdateDTO graphUpdateDTO) {
+    public Result<String> updateGraph(@RequestBody @Valid final GraphUpdateDTO graphUpdateDTO) {
         graphService.updateGraph(graphUpdateDTO, null);
         return Result.ok(Message.UPDATE_SUCCESS);
     }
@@ -75,13 +82,17 @@ public class GraphController {
     /**
      * Deletes graphs by their UUIDs.
      *
-     * @param graphDeleteDTO the list of UUIDs of the graphs to be deleted
-     * @return the result indicating the success of the deletion
+     * <p>
+     * This method handles a DELETE request to delete graphs based on the provided UUIDs.
+     * It validates the input DTO and calls the graph service to perform the deletion.
+     * The result is wrapped in a {@link Result} object with a success message.
+     *
+     * @param graphDeleteDTO the {@link GraphDeleteDTO} containing the UUIDs of the graphs to delete
+     * @return a {@link Result} object containing a success message
      */
     @ApiOperation(value = "Deletes graphs by their UUIDs")
     @DeleteMapping
-    public Result<String> deleteGraph(@RequestBody @Valid
-                                          final GraphDeleteDTO graphDeleteDTO) {
+    public Result<String> deleteGraph(@RequestBody @Valid final GraphDeleteDTO graphDeleteDTO) {
         graphService.deleteByUuids(graphDeleteDTO);
         return Result.ok(Message.DELETE_SUCCESS);
     }

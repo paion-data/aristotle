@@ -31,7 +31,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
- * Data Transfer Object (DTO) for creating nodes within a graph.
+ * Data Transfer Object (DTO) for creating nodes and adding relationships.
  *
  * This DTO is used to encapsulate the data required for creating nodes and their relations within a specific graph.
  */
@@ -45,18 +45,28 @@ public class NodeCreateDTO extends BaseEntity {
     /**
      * The UUID of the graph where the nodes will be created.
      *
+     * <p>
+     * This field is required and must not be blank.
+     * It uniquely identifies the graph in which the nodes will be created.
+     *
      * @see Message#UUID_MUST_NOT_BE_BLANK
      */
-    @ApiModelProperty(value = "The UUID of the graph where the nodes will be created.", required = true)
+    @ApiModelProperty(value = "The UUID of the graph where the nodes will be created. "
+            + "This field is required and must not be blank.", required = true)
     @NotBlank(message = Message.UUID_MUST_NOT_BE_BLANK)
     private String graphUuid;
 
     /**
      * The list of nodes to be created within the graph.
      *
+     * <p>
+     * This field is required and must not be null. Each element in the list is a {@link NodeDTO} object,
+     * which contains the details of a node to be created.
+     *
      * @see NodeDTO
      */
-    @ApiModelProperty(value = "The list of nodes to be created within the graph.", required = true)
+    @ApiModelProperty(value = "The list of nodes to be created within the graph. "
+            + "This field is required and must not be null.", required = true)
     @NotNull
     @Valid
     private List<NodeDTO> graphNodeDTO;
@@ -64,9 +74,17 @@ public class NodeCreateDTO extends BaseEntity {
     /**
      * The list of relations between nodes within the graph.
      *
+     * <p>
+     * This field is optional. Each element in the list is a {@link NodeRelationDTO} object,
+     * which contains the details of a relationship between two nodes.
+     *
+     * <p>
+     * One can create nodes without passing this field if no relationships are needed.
+     *
      * @see NodeRelationDTO
      */
-    @ApiModelProperty(value = "The list of relations between nodes within the graph.")
+    @ApiModelProperty(value = "The list of relations between nodes within the graph. "
+            + "One can create nodes without passing this field if no relationships are needed.")
     @Valid
     private List<NodeRelationDTO> graphNodeRelationDTO;
 }

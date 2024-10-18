@@ -15,8 +15,6 @@
  */
 package com.paiondata.aristotle.model.dto;
 
-import com.paiondata.aristotle.common.base.Message;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -42,16 +40,40 @@ import javax.validation.constraints.NotEmpty;
 public class NodeDeleteDTO {
 
     /**
-     * The uidcid of graph.
+     * The unique identifier (UUID) of the graph.
+     *
+     * <p>
+     * This field is the unique identifier for the graph. It is typically a UUID and is used to reference the graph
+     * in other parts of the system.
+     *
+     * <p>
+     * <strong>Note:</strong> This field is required and must not be blank.
+     *
+     * @example "123e4567e89b12d3a456426614174001"
      */
-    @ApiModelProperty(value = "The uuid of graph.", required = true)
-    @NotBlank(message = Message.UUID_MUST_NOT_BE_BLANK)
-    String uuid;
+    @ApiModelProperty(value = "The unique identifier (UUID) of the graph. This field is the unique identifier "
+            + "for the graph. It is typically a UUID and is used to reference the graph in other parts of the system. "
+            + "This field is required and must not be blank.", required = true,
+            example = "123e4567e89b12d3a456426614174001")
+    @NotBlank(message = "UUID must not be blank")
+    private String uuid;
 
     /**
-     * The uuids of nodes.
+     * The unique identifiers (UUIDs) of the nodes to be deleted.
+     *
+     * <p>
+     * This field is a list of unique identifiers (UUIDs) of the nodes that need to be deleted from the graph.
+     * Each UUID in the list corresponds to a specific node.
+     *
+     * <p>
+     * <strong>Note:</strong> This field is required and must not be empty.
+     *
+     * @example ["123e4567e89b12d3a456426614174001", "234f5678f9ab23c4d5ef678901234567"]
      */
-    @ApiModelProperty(value = "The uuids of nodes.", required = true)
-    @NotEmpty(message = Message.UUID_MUST_NOT_BE_BLANK)
-    List<String> uuids;
+    @ApiModelProperty(value = "The unique identifiers (UUIDs) of the nodes to be deleted."
+            + "This field is a list of unique identifiers (UUIDs) of the nodes that need to be deleted from the graph."
+            + "Each UUID in the list corresponds to a specific node. This field is required and must not be empty.",
+            required = true, example = "[\"123e4567e89b12d3a456426614174001\", \"234f5678f9ab23c4d5ef678901234567\"]")
+    @NotEmpty(message = "UUIDs must not be empty")
+    private List<String> uuids;
 }

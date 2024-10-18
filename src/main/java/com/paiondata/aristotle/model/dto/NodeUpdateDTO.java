@@ -42,17 +42,64 @@ import javax.validation.constraints.NotBlank;
 public class NodeUpdateDTO extends BaseEntity {
 
     /**
-     * The uuid of the node.
+     * The unique identifier (UUID) of the node.
      *
+     * <p>
+     * This field is the unique identifier for the node.
+     * It is typically a UUID and is used to reference the node in other parts of the system.
+     * </p>
+     *
+     * <p>
+     * <strong>Note:</strong> This field is required and must not be blank.
+     * </p>
+     *
+     * @example "123e4567-e89b-12d3-a456-426614174001"
      * @see Message#UUID_MUST_NOT_BE_BLANK
      */
-    @ApiModelProperty(value = "The uuid of the node.", required = true)
+    @ApiModelProperty(value = "The unique identifier (UUID) of the node. This field is the unique identifier for the "
+            + "node. It is typically a UUID and is used to reference the node in other parts of the system. This field"
+            + "is required and must not be blank.", required = true, example = "123e4567-e89b-12d3-a456-426614174001")
     @NotBlank(message = Message.UUID_MUST_NOT_BE_BLANK)
     private String uuid;
 
     /**
-     * The properties of the node.
+     * The attributes of the node.
+     *
+     * <p>
+     * This field is a map of node attributes.
+     * Each key in the map represents an attribute name, and the corresponding value represents the attribute value.
+     * These attributes can include any relevant information about the node.
+     * </p>
+     *
+     * <p>
+     * <strong>Note:</strong> This is an overwrite operation. The attributes provided will
+     * overwrite the existing attributes of the node. If you want to update only specific attributes,
+     * you must provide all the attributes you want to keep, including the ones you are not changing.
+     * </p>
+     *
+     * <p>
+     * <strong>Key:</strong> The name of the attribute (e.g., "name", "age").
+     * </p>
+     *
+     * <p>
+     * <strong>Value:</strong> The value of the attribute (e.g., "Peter", "30").
+     * </p>
+     *
+     * @example {
+     *   "name": "Peter",
+     *   "age": "30",
+     *   "position": "Software Engineer"
+     * }
      */
-    @ApiModelProperty(value = "properties")
+    @ApiModelProperty(value = "The attributes of the node. This field is a map of node attributes. "
+            + "Each key in the map represents an attribute name, and the corresponding value represents the "
+            + "attribute value. These attributes can include any relevant information about the node. "
+            + "This is an overwrite operation. The attributes provided will overwrite the existing attributes "
+            + "of the node. If you want to update only specific attributes, you must provide all the attributes "
+            + "you want to keep, including the ones you are not changing.", example = "{\n" +
+            "  \"name\": \"Peter\",\n" +
+            "  \"age\": \"30\",\n" +
+            "  \"position\": \"Software Engineer\"\n" +
+            "}")
     private Map<String, String> properties;
 }

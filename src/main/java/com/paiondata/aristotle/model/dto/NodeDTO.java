@@ -43,15 +43,42 @@ public class NodeDTO extends BaseEntity {
     /**
      * The temporary identifier of the node.
      *
+     * <p>
+     * This field is required and must not be blank.
+     * It serves as a temporary identifier for the node during the creation process.
+     * </p>
+     *
      * @see Message#TEMPORARY_ID_MUST_NOT_NULL
      */
-    @ApiModelProperty(value = "The temporary identifier of the node.", required = true)
+    @ApiModelProperty(value = "The temporary identifier of the node. This field is required and must not be blank.",
+            required = true)
     @NotBlank(message = Message.TEMPORARY_ID_MUST_NOT_NULL)
     private String temporaryId;
 
     /**
-     * The properties of the node.
+     * The attributes of the node.
+     *
+     * <p>
+     * This field is a map where the keys are the names of the attributes and the values are the
+     * corresponding attribute values.
+     *
+     * <p>
+     * For example, if you want to set the name of the node to "Peter" and the age to "30",
+     * the map would look like this:
+     *
+     * <pre>
+     * {
+     *   "name": "Peter",
+     *   "age": "30"
+     * }
+     * </pre>
+     *
+     * <p>
+     * Note that the values are stored as strings,
+     * so you may need to convert them to the appropriate data type when using them.
      */
-    @ApiModelProperty(value = "properties")
+    @ApiModelProperty(value = "The attributes of the node. This field is a map where the keys are the names of "
+            + "the attributes and the values are the corresponding attribute values. "
+            + "For example: {\"name\": \"Peter\", \"age\": \"30\"}")
     private Map<String, String> properties;
 }
