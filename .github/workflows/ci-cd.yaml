@@ -1,0 +1,142 @@
+# Copyright Jiaqi Liu
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+name: CI/CD
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+env:
+  PYTHON_VERSION: "3.10"
+
+jobs:
+  cancel-previous:
+    name: Cancel Previous Runs In Order to Allocate Action Resources Immediately for Current Run
+    if: github.ref != 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel previous
+        uses: styfle/cancel-workflow-action@0.10.1
+        with:
+          access_token: ${{ github.token }}
+
+  yaml-lint:
+    name: YAML Style Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actionshub/yamllint@main
+
+  markdown-lint:
+    name: Markdown Style Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actionshub/markdownlint@main
+
+  linkChecker:
+    name: Link Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Link Checker
+        uses: lycheeverse/lychee-action@v1.9.0
+        with:
+          fail: true
+
+  integration-tests:
+    name: Integration Tests
+    needs: [yaml-lint, markdown-lint, linkChecker]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - run: pip3 install -r requirements.txt
+      - name: Start app
+        run: python3 app.py &
+      - name: Wait for app to be ready
+        uses: iFaxity/wait-on-action@v1
+        with:
+          resource: http://localhost:7860
+      - name: Verify API endpoint is working
+        uses: iFaxity/wait-on-action@v1
+        with:
+          resource: http://localhost:7860/?view=api
+          timeout: 60000
+
+  docker:
+    name: Test Docker Image & Container and Publish Image to Docker Hub
+    needs: [yaml-lint, markdown-lint, linkChecker]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Image Build Test
+        run: docker build -t jack20191124/aristotle .
+      - name: Startup a Container
+        run: docker run -d --name aristotle -p 7860:7860 -e SERVER_NAME=0.0.0.0 jack20191124/aristotle
+      - name: Wait for container to be up and running
+        uses: iFaxity/wait-on-action@v1
+        with:
+          resource: http://localhost:7860
+      - name: Verify API endpoint is working
+        uses: iFaxity/wait-on-action@v1
+        with:
+          resource: http://localhost:7860/?view=api
+          timeout: 60000
+      - name: Login to DockerHub
+        if: github.ref == 'refs/heads/master'
+        uses: docker/login-action@v2
+        with:
+          username: jack20191124
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Push image to DockerHub
+        if: github.ref == 'refs/heads/master'
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: jack20191124/aristotle:latest
+      - name: Push image Description
+        if: github.ref == 'refs/heads/master'
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: jack20191124
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: jack20191124/aristotle
+          readme-filepath: README.md
+
+  sync-to-huggingface-space:
+    needs: [integration-tests]
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          lfs: true
+      - name: Push to hub
+        run: git push https://QubitPi:$HF_TOKEN@huggingface.co/spaces/QubitPi/aristotle master:main -f
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
