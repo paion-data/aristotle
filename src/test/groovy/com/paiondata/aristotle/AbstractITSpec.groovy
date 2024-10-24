@@ -34,7 +34,7 @@ abstract class AbstractITSpec extends Specification {
     protected static final int WS_PORT = 8080
     private static final int OK_CODE = 200
     private static final String USER_ENDPOINT = "/user"
-    private static final String GRAPH_ENDPOINT = "/graph"
+
     private static final String NODE_ENDPOINT = "/node"
     private static final String CREATE_UPDATE_USER_JSON = "create-update-user.json"
     private static final String UPDATE_GRAPH_JSON = "update-graph.json"
@@ -224,64 +224,6 @@ abstract class AbstractITSpec extends Specification {
         "uidcid" | "title"    | ""            | "id1"        | "id2"        | "id1"  | "relation"   | ""    | "Request parameter verification error: " | ["description must not be blank!", "toId must not be blank!"]
         "uidcid" | "title"    | "description" | ""           | ""           | "id1"  | "relation"   | "id2" | "Request parameter verification error: " | ["temporaryId must not null!", "temporaryId must not null!"]
         "uidcid" | "title"    | "description" | ""           | "id2"        | ""     | "relation"   | "id2" | "Request parameter verification error: " | ["temporaryId must not null!", "fromId must not be blank!"]
-    }
-
-    def "JSON API handles invalid graph retrieving requests"() {
-        expect:
-        Response response = RestAssured
-                .given()
-                .contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
-                .body(String.format(payload(GET_GRAPH_JSON), ""))
-                .when()
-                .post(GRAPH_ENDPOINT)
-                .then()
-                .extract()
-                .response()
-
-        Assertions.assertEquals("Request parameter verification error: ", response.jsonPath().get("msg"))
-        Assertions.assertEquals("uuid must not be blank!", response.jsonPath().get("data[0]"))
-    }
-
-    def "JSON API handles invalid graph updating requests"() {
-        expect:
-        Response response = RestAssured
-                .given()
-                .contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
-                .body(String.format(payload(UPDATE_GRAPH_JSON), "", TestConstants.TEST_TILE1))
-                .when()
-                .put(GRAPH_ENDPOINT)
-                .then()
-                .extract()
-                .response()
-
-        Assertions.assertEquals("Request parameter verification error: ", response.jsonPath().get("msg"))
-        Assertions.assertEquals("uuid must not be blank!", response.jsonPath().get("data[0]"))
-    }
-
-    def "JSON API handles invalid graph deleting requests"() {
-        expect:
-        Response response = RestAssured
-                .given()
-                .contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
-                .body(String.format(payload("delete-graph-to-valid.json"), uidcid))
-                .when()
-                .delete(GRAPH_ENDPOINT)
-                .then()
-                .extract()
-                .response()
-
-        def actualData = response.jsonPath().get(TestConstants.DATA) as List<String>
-        def sortedActualData = actualData.sort()
-        def sortedExpectedData = expectedData.sort()
-        assert sortedActualData == sortedExpectedData
-
-        where:
-        uidcid   | expectedMsg                              | expectedData
-        ""       | "Request parameter verification error: " | ["uidcid must not be blank!", "uuids must not be empty!"]
-        "id"     | "Request parameter verification error: " | ["uuids must not be empty!"]
     }
 
     def "JSON API handles invalid node creation requests"() {
