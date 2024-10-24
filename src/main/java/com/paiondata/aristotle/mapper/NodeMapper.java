@@ -60,6 +60,8 @@ public interface NodeMapper {
     GetRelationDTO getRelationByGraphUuid(String uuid, Map<String, String> properties,
                                           Integer pageNumber, Integer pageSize);
 
+    GetRelationDTO getNodeByKExpend(String uuid, String name);
+
     /**
      * Binds two graph nodes with a specified relationship.
      *

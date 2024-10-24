@@ -21,6 +21,7 @@ import com.paiondata.aristotle.mapper.NodeMapper;
 import com.paiondata.aristotle.model.dto.GetRelationDTO;
 import com.paiondata.aristotle.model.dto.NodeDTO;
 import com.paiondata.aristotle.model.dto.NodeUpdateDTO;
+import com.paiondata.aristotle.model.dto.PathDTO;
 import com.paiondata.aristotle.model.vo.NodeVO;
 import com.paiondata.aristotle.model.vo.RelationVO;
 
@@ -36,6 +37,7 @@ import org.springframework.stereotype.Repository;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -205,6 +207,54 @@ public class NodeMapperImpl implements NodeMapper {
                 return new GetRelationDTO(relations, new ArrayList<>(nodes), totalCount);
             });
         }
+    }
+
+    @Override
+    public GetRelationDTO getNodeByKExpend(String uuid, String name) {
+        String cypherQuery = "MATCH (g:Graph { uuid: $uuid }) "
+                + "-[:RELATION]->(n:GraphNode {name: $name}) "
+                + "CALL apoc.path.expand(n, \"RELATION\", null, 1, -1) YIELD path "
+                + "WHERE "
+                + "all(rel IN relationships(path) WHERE rel.name <> 'HAVE') "
+                + "RETURN nodes(path) AS nodes, relationships(path) AS relationships";
+
+        try (Session session = driver.session(SessionConfig.builder().build())) {
+            return session.readTransaction(tx -> {
+                final var result = tx.run(cypherQuery, Values.parameters(
+                        Constants.UUID, uuid,
+                        Constants.NAME, name));
+
+                final List<RelationVO> relations = new ArrayList<>();
+                final Set<NodeVO> nodes = new HashSet<>();
+
+                while (result.hasNext()) {
+                    final Record record = result.next();
+                    final PathDTO p = nodeExtractor.extractPath(record.get(Constants.PATH));
+                    nodes.add(n);
+
+                    final List<Map<String, Object>> relationshipInfos = nodeExtractor
+                            .extractRelationships(record.get(Constants.RELATIONS));
+
+                    relations.addAll(relationshipInfos.stream()
+                            .map(relationshipInfo -> {
+                                final RelationVO relationVO = new RelationVO();
+                                relationVO.setSourceNode((String) relationshipInfo.get(Constants.SOURCE_NODE));
+                                relationVO.setTargetNode((String) relationshipInfo.get(Constants.TARGET_NODE));
+                                relationVO.setUuid((String) relationshipInfo.get(Constants.UUID));
+                                relationVO.setName((String) relationshipInfo.get(Constants.NAME));
+                                relationVO.setCreateTime((String) relationshipInfo.get(Constants.CREATE_TIME));
+                                relationVO.setUpdateTime((String) relationshipInfo.get(Constants.UPDATE_TIME));
+                                return relationVO;
+                            })
+                            .collect(Collectors.toList()));
+                }
+
+
+                return new GetRelationDTO(relations, new ArrayList<>(nodes), totalCount);
+            });
+        }
+
+        return null;
     }
 
     /**
