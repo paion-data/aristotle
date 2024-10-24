@@ -161,6 +161,11 @@ public interface Constants {
     String NODE_ALIAS_N = "n";
 
     /**
+     * Represents the path in cypher.
+     */
+    String PATH = "path";
+
+    /**
      * Represents the quote in cypher.
      */
     String QUOTE = "'";

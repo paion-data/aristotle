@@ -16,6 +16,7 @@
 package com.paiondata.aristotle.common.util;
 
 import com.paiondata.aristotle.common.base.Constants;
+import com.paiondata.aristotle.model.dto.PathDTO;
 import com.paiondata.aristotle.model.vo.NodeVO;
 
 import org.neo4j.driver.Value;
