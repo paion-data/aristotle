@@ -25,7 +25,7 @@ __Aristotle__ is an automatic text to speech application that takes an Ancient G
 downloadable audio for language learner for practice speaking in Ancient Greek. Aristotle generates speech using the
 [OpenAI's text-to-speech API](https://platform.openai.com/docs/guides/text-to-speech).
 
-The app is available on [Hugging Face space][Project Aristotle on Hugging Face]. Please check it out.
+The app is available on [Hugging Face space][Hugging Face space URL]. Please check it out.
 
 A Docker image is also available:
 
@@ -127,13 +127,12 @@ The use and distribution terms for [aristotle]() are covered by the [Apache Lice
 [Docker Pulls Badge]: https://img.shields.io/docker/pulls/jack20191124/aristotle?style=for-the-badge&logo=docker&color=2596EC
 [Docker Hub URL]: https://hub.docker.com/r/jack20191124/aristotle
 
-[GitHub workflow status badge]: https://img.shields.io/github/actions/workflow/status/QubitPi/wilhelm/ci-cd.yaml?branch=master&style=for-the-badge&logo=github&logoColor=white&label=CI/CD
-[GitHub workflow status URL]: https://github.com/QubitPi/wilhelm/actions/workflows/ci-cd.yaml
+[GitHub workflow status badge]: https://img.shields.io/github/actions/workflow/status/QubitPi/aristotle/ci-cd.yaml?branch=master&style=for-the-badge&logo=github&logoColor=white&label=CI/CD
+[GitHub workflow status URL]: https://github.com/QubitPi/aristotle/actions/workflows/ci-cd.yaml
 
 [Hugging Face space badge]: https://img.shields.io/badge/Hugging%20Face%20Space-aristotle-FFD21E?style=for-the-badge&logo=huggingface&logoColor=white
 [Hugging Face space URL]: https://huggingface.co/spaces/QubitPi/aristotle
 [Hugging Face sync status badge]: https://img.shields.io/github/actions/workflow/status/QubitPi/aristotle/ci-cd.yaml?branch=master&style=for-the-badge&logo=github&logoColor=white&label=Hugging%20Face%20Sync%20Up
 [Hugging Face sync status URL]: https://github.com/QubitPi/aristotle/actions/workflows/ci-cd.yaml
 
-[Project Aristotle on Hugging Face]: https://huggingface.co/spaces/QubitPi/aristotle
 [Python Version Badge]: https://img.shields.io/badge/Python-3.10-FFD845?labelColor=498ABC&style=for-the-badge&logo=python&logoColor=white
