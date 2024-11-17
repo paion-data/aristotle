@@ -1,0 +1,5 @@
+org.qubitpi.wilhelm
+org.qubitpi.wilhelm.application
+org.qubitpi.wilhelm.config
+org.qubitpi.wilhelm.web.endpoints
+org.qubitpi.wilhelm.web.filters
