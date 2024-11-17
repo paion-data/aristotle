@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-name: Template CI/CD
+name: CI/CD
 
 "on":
   pull_request:
@@ -27,12 +27,8 @@ env:
   EMAIL: jack20220723@gmail.com
 
 jobs:
-  yml-md-style-and-link-checks:
-    uses: QubitPi/hashistack/.github/workflows/yml-md-style-and-link-checks.yml@master
-
   tests:
     name: Unit & Integration Tests
-    needs: yml-md-style-and-link-checks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -42,3 +38,35 @@ jobs:
         uses: docker-practice/actions-setup-docker@master
       - name: Run unit & integration tests
         run: mvn -B clean verify
+
+  deploy-docs:
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Set up JDK
+        uses: paion-data/immutable-infrastructure-as-a-service/.github/actions/jdk-setup@master
+      - name: Install Dependencies
+        working-directory: docs
+        run: yarn
+      - name: Build Documentation
+        working-directory: docs
+        run: yarn build
+      - name: Generate Javadoc
+        run: mvn -B clean javadoc:javadoc
+      - name: Move Javadoc into documentation directory
+        if: github.ref == 'refs/heads/master'
+        run: mv target/site/apidocs/ docs/build/apidocs/
+      - name: Load CNAME file
+        if: github.ref == 'refs/heads/master'
+        run: cp docs/CNAME docs/build
+      - name: Deploy Documentation (including Javadoc) to GitHub Pages
+        if: github.ref == 'refs/heads/master'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/build
+          enable_jekyll: false
+          user_name: ${{ env.USER }}
+          user_email: ${{ env.EMAIL }}
