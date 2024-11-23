@@ -130,7 +130,7 @@ The use and distribution terms for [aristotle]() are covered by the [Apache Lice
 [GitHub workflow status badge]: https://img.shields.io/github/actions/workflow/status/QubitPi/aristotle/ci-cd.yaml?branch=master&style=for-the-badge&logo=github&logoColor=white&label=CI/CD
 [GitHub workflow status URL]: https://github.com/QubitPi/aristotle/actions/workflows/ci-cd.yaml
 
-[Hugging Face space badge]: https://img.shields.io/badge/Hugging%20Face%20Space-aristotle-FFD21E?style=for-the-badge&logo=huggingface&logoColor=white
+[Hugging Face space badge]: https://img.shields.io/badge/Hugging%20Face%20Space-aristotle-FF9D00?style=for-the-badge&logo=huggingface&logoColor=white&labelColor=6B7280
 [Hugging Face space URL]: https://huggingface.co/spaces/QubitPi/aristotle
 [Hugging Face sync status badge]: https://img.shields.io/github/actions/workflow/status/QubitPi/aristotle/ci-cd.yaml?branch=master&style=for-the-badge&logo=github&logoColor=white&label=Hugging%20Face%20Sync%20Up
 [Hugging Face sync status URL]: https://github.com/QubitPi/aristotle/actions/workflows/ci-cd.yaml
