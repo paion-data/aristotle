@@ -25,7 +25,7 @@ __Aristotle__ is an automatic text to speech application that takes an Ancient G
 downloadable audio for language learner for practice speaking in Ancient Greek. Aristotle generates speech using the
 [OpenAI's text-to-speech API](https://platform.openai.com/docs/guides/text-to-speech).
 
-The app is available on [Hugging Face space][Hugging Face space URL]. Please check it out.
+The app is available on [🤗 Hugging Face space][Hugging Face space URL]. Please check it out.
 
 A Docker image is also available:
 
