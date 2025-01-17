@@ -30,7 +30,7 @@ The app is available on [🤗 Hugging Face space][Hugging Face space URL]. Pleas
 A Docker image is also available:
 
 ```console
-docker run -d --name aristotle -p 7860:7860 jack20191124/aristotle
+docker run -d --name aristotle -p 7860:7860 paiondatahub/aristotle
 ```
 
 When container is up and running, visit app at  [http://localhost:7860](http://localhost:7860).
@@ -71,7 +71,7 @@ Development
 ### Running Locally
 
 ```console
-git clone git@github.com:QubitPi/aristotle.git
+git clone git@github.com:paion-data/aristotle.git
 cd aristotle
 
 virtualenv .venv
@@ -98,14 +98,14 @@ To build a Docker container of Aristotle, follow these steps:
 3. Run the following command to build the Docker image:
 
     ```consule
-    docker build -t jack20191124/aristotle .
+    docker build -t paiondatahub/aristotle .
     ```
 
 4. Wait for the build process to complete.
 5. Once the build is finished, we can run the Docker container using the following command:
 
     ```console
-    docker run -it --name aristotle -p 7860:7860 jack20191124/aristotle
+    docker run -it --name aristotle -p 7860:7860 paiondatahub/aristotle
     ```
 
 6. Open up browser and navigate to [http://localhost:7860](http://localhost:7860) to access the space.
@@ -124,15 +124,15 @@ The use and distribution terms for [aristotle]() are covered by the [Apache Lice
 [Apache License Badge]: https://img.shields.io/badge/Apache%202.0-F25910.svg?style=for-the-badge&logo=Apache&logoColor=white
 [Apache License, Version 2.0]: https://www.apache.org/licenses/LICENSE-2.0
 
-[Docker Pulls Badge]: https://img.shields.io/docker/pulls/jack20191124/aristotle?style=for-the-badge&logo=docker&color=2596EC
-[Docker Hub URL]: https://hub.docker.com/r/jack20191124/aristotle
+[Docker Pulls Badge]: https://img.shields.io/docker/pulls/paiondatahub/aristotle?style=for-the-badge&logo=docker&color=2596EC
+[Docker Hub URL]: https://hub.docker.com/r/paiondatahub/aristotle
 
-[GitHub workflow status badge]: https://img.shields.io/github/actions/workflow/status/QubitPi/aristotle/ci-cd.yaml?branch=master&style=for-the-badge&logo=github&logoColor=white&label=CI/CD
-[GitHub workflow status URL]: https://github.com/QubitPi/aristotle/actions/workflows/ci-cd.yaml
+[GitHub workflow status badge]: https://img.shields.io/github/actions/workflow/status/paion-data/aristotle/ci-cd.yaml?branch=master&style=for-the-badge&logo=github&logoColor=white&label=CI/CD
+[GitHub workflow status URL]: https://github.com/paion-data/aristotle/actions/workflows/ci-cd.yaml
 
 [Hugging Face space badge]: https://img.shields.io/badge/Hugging%20Face%20Space-aristotle-FF9D00?style=for-the-badge&logo=huggingface&logoColor=white&labelColor=6B7280
-[Hugging Face space URL]: https://huggingface.co/spaces/QubitPi/aristotle
-[Hugging Face sync status badge]: https://img.shields.io/github/actions/workflow/status/QubitPi/aristotle/ci-cd.yaml?branch=master&style=for-the-badge&logo=github&logoColor=white&label=Hugging%20Face%20Sync%20Up
-[Hugging Face sync status URL]: https://github.com/QubitPi/aristotle/actions/workflows/ci-cd.yaml
+[Hugging Face space URL]: https://huggingface.co/spaces/paion-data/aristotle
+[Hugging Face sync status badge]: https://img.shields.io/github/actions/workflow/status/paion-data/aristotle/ci-cd.yaml?branch=master&style=for-the-badge&logo=github&logoColor=white&label=Hugging%20Face%20Sync%20Up
+[Hugging Face sync status URL]: https://github.com/paion-data/aristotle/actions/workflows/ci-cd.yaml
 
 [Python Version Badge]: https://img.shields.io/badge/Python-3.10-FFD845?labelColor=498ABC&style=for-the-badge&logo=python&logoColor=white
