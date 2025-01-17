@@ -93,9 +93,9 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Image Build Test
-        run: docker build -t jack20191124/aristotle .
+        run: docker build -t paiondatahub/aristotle .
       - name: Startup a Container
-        run: docker run -d --name aristotle -p 7860:7860 -e SERVER_NAME=0.0.0.0 jack20191124/aristotle
+        run: docker run -d --name aristotle -p 7860:7860 -e SERVER_NAME=0.0.0.0 paiondatahub/aristotle
       - name: Wait for container to be up and running
         uses: iFaxity/wait-on-action@v1
         with:
@@ -106,25 +106,25 @@ jobs:
           resource: http://localhost:7860/?view=api
           timeout: 60000
       - name: Login to DockerHub
-        if: github.ref == 'refs/heads/master'
+        #if: github.ref == 'refs/heads/master'
         uses: docker/login-action@v2
         with:
-          username: jack20191124
+          username: paiondatahub
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Push image to DockerHub
-        if: github.ref == 'refs/heads/master'
+        #if: github.ref == 'refs/heads/master'
         uses: docker/build-push-action@v3
         with:
           context: .
           push: true
-          tags: jack20191124/aristotle:latest
+          tags: paiondatahub/aristotle:latest
       - name: Push image Description
-        if: github.ref == 'refs/heads/master'
+        #if: github.ref == 'refs/heads/master'
         uses: peter-evans/dockerhub-description@v4
         with:
-          username: jack20191124
+          username: paiondatahub
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: jack20191124/aristotle
+          repository: paiondatahub/aristotle
           readme-filepath: README.md
 
   sync-to-huggingface-space:
@@ -137,6 +137,6 @@ jobs:
           fetch-depth: 0
           lfs: true
       - name: Push to hub
-        run: git push https://QubitPi:$HF_TOKEN@huggingface.co/spaces/QubitPi/aristotle master:main -f
+        run: git push https://paion-data:$HF_TOKEN@huggingface.co/spaces/paion-data/aristotle master:main -f
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
