@@ -106,20 +106,20 @@ jobs:
           resource: http://localhost:7860/?view=api
           timeout: 60000
       - name: Login to DockerHub
-        #if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/master'
         uses: docker/login-action@v2
         with:
           username: paiondatahub
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Push image to DockerHub
-        #if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/master'
         uses: docker/build-push-action@v3
         with:
           context: .
           push: true
           tags: paiondatahub/aristotle:latest
       - name: Push image Description
-        #if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/master'
         uses: peter-evans/dockerhub-description@v4
         with:
           username: paiondatahub
